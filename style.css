@@ -1,0 +1,54 @@
+:root { --blue: #0b74a8; --ink: #111; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: #e4eaed; color: var(--ink);
+  font-family: "itc-avant-garde-gothic-pro", "Century Gothic", "Avant Garde", sans-serif; font-weight: 700;
+  border: 1px solid #000; min-height: 100vh;
+}
+nav { display: flex; justify-content: center; gap: clamp(2rem, 9vw, 8rem); padding: 2rem 1rem; }
+nav a { color: var(--blue); text-decoration: none; font-weight: 700; font-size: 10pt; }
+nav a:hover, nav a[aria-current] { text-decoration: underline; text-underline-offset: 4px; }
+
+/* home hero */
+.hero {
+  /* eased (smoothstep-like) feather so the edges melt into the page */
+  --s: 9.2842px; /* Illustrator gaussian blur radius */
+  --ease: rgba(0,0,0,.02) 0, rgba(0,0,0,.07) calc(var(--s) * .5), rgba(0,0,0,.16) var(--s), rgba(0,0,0,.31) calc(var(--s) * 1.5), rgba(0,0,0,.5) calc(var(--s) * 2), rgba(0,0,0,.69) calc(var(--s) * 2.5), rgba(0,0,0,.84) calc(var(--s) * 3), rgba(0,0,0,.93) calc(var(--s) * 3.5), #000 calc(var(--s) * 4.2),
+          #000 calc(100% - var(--s) * 4.2), rgba(0,0,0,.93) calc(100% - var(--s) * 3.5), rgba(0,0,0,.84) calc(100% - var(--s) * 3), rgba(0,0,0,.69) calc(100% - var(--s) * 2.5), rgba(0,0,0,.5) calc(100% - var(--s) * 2), rgba(0,0,0,.31) calc(100% - var(--s) * 1.5), rgba(0,0,0,.16) calc(100% - var(--s)), rgba(0,0,0,.07) calc(100% - var(--s) * .5), rgba(0,0,0,.02) 100%;
+  position: relative; width: min(79%, 1100px); aspect-ratio: 1100 / 610;
+  margin: 4rem auto; overflow: hidden; container-type: inline-size;
+  -webkit-mask-image: linear-gradient(to right, var(--ease)), linear-gradient(to bottom, var(--ease));
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, var(--ease)), linear-gradient(to bottom, var(--ease));
+  mask-composite: intersect;
+}
+.hero .bg, .hero video {
+  position: absolute; inset: -3%; width: 106%; height: 106%; object-fit: cover;
+  filter: blur(.4cqw) saturate(1.1);
+}
+.hero .bg { background: radial-gradient(ellipse at 30% 20%, #2fb6dc 0%, #1b7fc0 45%, #1a4f9c 100%); }
+/* strong, fine, colored film grain */
+.hero .noise {
+  position: absolute; inset: 0; pointer-events: none; opacity: .47; mix-blend-mode: overlay; filter: blur(.5px);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='1.42 0 0 0 -.21  0 1.42 0 0 -.21  0 0 1.42 0 -.21  0 0 0 0 1'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+.hero .text { white-space: nowrap; position: absolute; left: 6.5%; top: 41%; color: #e4eaed; }
+.hero .text p { margin: 0 0 .2cqw .6cqw; font-size: 17pt; font-weight: 700; letter-spacing: -.01em; }
+.hero .text h1 { margin: 0; font-family: "acumin-pro-wide", "Arial Black", "Helvetica Neue", Arial, sans-serif; font-size: 63pt; font-weight: 700; letter-spacing: -.035em; line-height: .8; }
+
+/* inner pages */
+main { max-width: 900px; margin: 3rem auto; padding: 0 1.5rem; }
+main h2 { color: var(--blue); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; }
+.card { aspect-ratio: 4 / 3; background: linear-gradient(135deg, #2fb6dc, #1a4f9c); color: #e4eaed;
+  display: flex; align-items: flex-end; padding: .8rem; font-weight: 700; }
+
+/* home icon */
+nav { position: relative; }
+nav a.home { position: absolute; left: 2.5rem; top: 1.5rem; display: block; line-height: 0; }
+nav a.home:hover { text-decoration: none; opacity: .65; }
+nav a.home img { display: block; height: 105px; width: auto; transform: rotate(-45deg);
+  --t: .4px; --c: #0a5f84; /* outline thickness + colour */
+  filter: drop-shadow(var(--t) 0 0 var(--c)) drop-shadow(calc(var(--t) * -1) 0 0 var(--c)) drop-shadow(0 var(--t) 0 var(--c)) drop-shadow(0 calc(var(--t) * -1) 0 var(--c)); }
+.ch { display: inline-block; }
