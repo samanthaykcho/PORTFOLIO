@@ -1,5 +1,5 @@
 // slow-motion background video (falls back to gradient if no video file)
-const v = document.querySelector(".hero video");
+const v = document.querySelector(".hero video, .pvideo video");
 if (v) {
   v.playbackRate = 0.4;
   v.addEventListener("error", () => v.remove(), true);
@@ -39,7 +39,7 @@ const tick = (now) => {
   raf = active.size ? requestAnimationFrame(tick) : null;
 };
 
-document.querySelectorAll(".hero .text p, .hero .text h1, nav a:not(.home)").forEach(block => {
+document.querySelectorAll(".hero .text p, .hero .text h1, .ptitle, nav a:not(.home)").forEach(block => {
   const text = block.textContent;
   block.setAttribute("aria-label", text);
   block.textContent = "";
@@ -67,25 +67,34 @@ document.querySelectorAll(".hero .text p, .hero .text h1, nav a:not(.home)").for
 });
 
 // startup: wait for video + fonts (plus a short buffer), then fade the hero in.
-const reveal = document.querySelector(".reveal");
+const reveal = document.querySelector(".reveal, .pbanner");
 if (reveal) {
-  const vid = document.querySelector(".hero video");
+  const vid = document.querySelector(".hero video, .pvideo video");
   const videoReady = new Promise(res => {
     if (!vid || vid.readyState >= 3) return res();
     vid.addEventListener("canplaythrough", res, { once: true });
     vid.addEventListener("error", res, { once: true });
     setTimeout(res, 4000); // don"t wait forever
   });
-  Promise.all([videoReady, document.fonts.ready]).then(() => setTimeout(() => {
+  const loader = document.documentElement.classList.contains("noloader") ? null : document.querySelector(".loader");
+  const gifs = ["FISH", "RAY", "WHALE"];
+  const pick = gifs[Math.floor(Math.random() * gifs.length)];
+  const loaderImg = loader?.querySelector("img");
+  if (loaderImg) loaderImg.src = `assets/PORTFOLIO%20ELEMENTS/${pick}.GIF`;
+  const minShow = new Promise(res => setTimeout(res, loader ? 2500 : 0)); // loading screen stays at least this long
+  Promise.all([videoReady, document.fonts.ready, minShow]).then(() => {
+    loader?.classList.add("out");
     reveal.classList.add("go");
-    setTimeout(dropTitle, 1000); // as the fade nears its end
-  }, 500));
+    if (!document.documentElement.classList.contains("noloader")) setTimeout(dropTitle, 1000); // as the fade nears its end
+    fadeProjectText();
+    setTimeout(() => loader?.remove(), 1000);
+  });
 }
 
 // PORTFOLIO drops in letter by letter like ice cubes into water: they plunge,
 // sink a little, then bob back up and float into place.
 function dropTitle() {
-  document.querySelectorAll('.hero h1 .ch').forEach((el, i) => {
+  document.querySelectorAll('.hero h1 .ch, .ptitle .ch').forEach((el, i) => {
     const r = rand(10, 28) * (Math.random() < 0.5 ? -1 : 1), x = rand(-14, 14);
     const anim = el.animate([
       // one fast, unbroken plunge that the water slows down (no pause on the way in)
@@ -101,7 +110,29 @@ function dropTitle() {
 }
 
 // inner pages: fade the page's elements in one by one (headings/text first, then each card)
-document.querySelectorAll("main").forEach(main => {
+document.querySelectorAll("main:not(.project)").forEach(main => {
   [...main.children].flatMap(el => el.classList.contains("grid") ? [...el.children] : [el])
     .forEach((el, i) => { el.style.setProperty("--i", i); el.classList.add("fade-in"); });
+});
+
+// project pages: the meta row and paragraphs fade in one by one after the banner reveals
+function fadeProjectText() {
+  document.querySelectorAll("main.project > :not(.pbanner):not(.ptitle)").forEach((el, i) => {
+    el.style.setProperty("--i", i + 4); el.classList.add("fade-in");
+  });
+}
+
+// works grid: cards pop up as they scroll into view; cards entering together (a row) pop in sequence
+const cardObserver = new IntersectionObserver(entries => {
+  entries.filter(e => e.isIntersecting).forEach((e, i) => {
+    e.target.style.setProperty("--d", i * 150 + "ms");
+    e.target.classList.add("in");
+    cardObserver.unobserve(e.target);
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll(".pcard").forEach(c => cardObserver.observe(c));
+
+// clicking the ray replays the loading screen on the home page
+document.querySelector("nav a.home")?.addEventListener("click", () => {
+  try { sessionStorage.setItem("replay", "1"); } catch (e) {}
 });
