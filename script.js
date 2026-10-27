@@ -43,11 +43,13 @@ document.querySelectorAll(".hero .text p, .hero .text h1, .ptitle, nav a:not(.ho
   const text = block.textContent;
   block.setAttribute("aria-label", text);
   block.textContent = "";
+  let word = null;   // letters are grouped per word so a line break can only fall between words
   for (const c of text) {
-    if (c === " ") { block.append(" "); continue; }
+    if (c === " ") { block.append(" "); word = null; continue; }
+    if (!word) { word = document.createElement("span"); word.className = "word"; block.append(word); }
     const el = document.createElement("span");
     el.className = "ch"; el.textContent = c; el.setAttribute("aria-hidden", "true");
-    block.append(el);
+    word.append(el);
 
     const st = { el, energy: 0, hover: false, t: 0, phase: 0, speed: 1, power: 1, dir: 1, sway: 0, max: 0 };
     el.addEventListener("mouseenter", () => {
